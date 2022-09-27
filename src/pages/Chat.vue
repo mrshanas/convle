@@ -181,6 +181,8 @@ export default {
     this.$refs.input.focus();
     this.fetchData();
     this.fetchUser();
+
+    // console.log(import.meta.env.VITE_GOOGLE_OAUTH2_API_SECRET);
   },
   updated() {
     this.scrollToBottom();
@@ -191,21 +193,15 @@ export default {
       if (!this.message) return;
 
       this.ws.send(JSON.stringify({ message: this.message }));
-      console.log("message sent");
-
       this.message = "";
-      this.scrollToBottom();
-
       let newMessages = this.messages;
 
       this.ws.onmessage = function (e) {
         const data = JSON.parse(e.data).message;
         newMessages.push(data);
-        this.scrollToBottom();
       };
 
       this.messages = newMessages;
-      this.scrollToBottom();
     },
     extractFirstLetters(text: string) {
       const words = text.split(" ");
@@ -220,7 +216,7 @@ export default {
       this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
     },
 
-    // ---- api calls to the server ------
+    // ------ asynchronous api calls to the server ------
     async fetchUser() {
       const token = JSON.parse(localStorage.getItem("convle_access_token"));
       const userId = jwtDecode(token).user_id;
@@ -232,8 +228,6 @@ export default {
       });
     },
     async fetchGroup(groupId: string) {
-      this.scrollToBottom();
-
       await this.axios.get(`/chat/groups/${groupId}`).then((res) => {
         if (res.status === 200) {
           this.selectedGroup = res.data;
@@ -246,10 +240,6 @@ export default {
       this.ws = new WebSocket(
         `ws://localhost:8000/ws/chat/${groupId}/?token=${token}`
       );
-
-      this.ws.onopen = function () {
-        console.log("socket connected successfully");
-      };
     },
     async fetchData() {
       await this.axios.get("/chat/groups/").then((res) => {
@@ -257,7 +247,6 @@ export default {
           this.groups = res.data;
         }
       });
-      this.scrollToBottom();
     },
   },
 };

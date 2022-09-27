@@ -1,67 +1,41 @@
 <template>
   <div class="bg-gray-dark min-h-[100vh]">
-    <h1>Home</h1>
+    <h1>ConVLE</h1>
 
-    <!-- Temporary Login Form for testing -->
-    <form autocomplete="off">
-      <div>
-        <input
-          type="email"
-          v-model="email"
-          placeholder="Email"
-          class="bg-inherit outline-none"
-        />
-      </div>
-      <br />
-      <div>
-        <input
-          type="password"
-          v-model="password"
-          placeholder="Password"
-          class="bg-inherit outline-none"
-        />
-      </div>
-      <input
-        type="submit"
-        value="Login"
-        @click.prevent="loginUser"
-        class="bg-red-500 my-3"
-      />
-    </form>
+    <button @click="login">Login with Google</button>
   </div>
 </template>
 
 <script lang="ts">
 //@ts-nocheck
+import { googleTokenLogin } from "vue3-google-login";
+
 export default {
-  data: () => ({
-    email: "",
-    password: "",
-  }),
   methods: {
-    async loginUser(e) {
-      e.preventDefault();
-
-      const router = this.$router;
-      const data = { email: this.email, password: this.password };
-
-      await this.axios.post("/auth/token/", data).then((res) => {
-        if (res.status === 200) {
-          localStorage.setItem(
-            "convle_access_token",
-            JSON.stringify(res.data.access)
-          );
-          localStorage.setItem(
-            "convle_refresh_token",
-            JSON.stringify(res.data.refresh)
-          );
-
-          router.push("/chat");
-        }
+    login() {
+      googleTokenLogin({
+        clientId: import.meta.env.VITE_GOOGLE_OAUTH2_CLIENT_ID,
+      }).then((res) => {
+        this.authenticate(res.access_token);
       });
+    },
+    async authenticate(token: string) {
+      await this.axios
+        .post("/auth/social/google-oauth2/", { access_token: token })
+        .then((res) => {
+          if (res.status === 200) {
+            localStorage.setItem(
+              "convle_access_token",
+              JSON.stringify(res.data.access)
+            );
+            localStorage.setItem(
+              "convle_refresh_token",
+              JSON.stringify(res.data.refresh)
+            );
 
-      this.email = "";
-      this.password = "";
+            this.$router.push("/chat");
+          }
+        });
     },
   },
 };

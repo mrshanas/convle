@@ -19,10 +19,6 @@ api.interceptors.request.use((req: AxiosRequestConfig) => {
     req.headers.authorization = `Bearer ${token}`;
   }
 
-  // temporarily
-  //@ts-ignore
-  req.headers.authorization =
-    "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjY0MzU3NzczLCJpYXQiOjE2NjQyNzEzNzMsImp0aSI6IjhiNGFlNzU2NTFlYjQ2OGI4ZGNhYzM2MDYzYmM2ZGU3IiwidXNlcl9pZCI6MX0._4kCDA_WY6O3y_HQuf06UTeRyAUNaDGnFCQbZ-Fhoko";
   return req;
 });
 
