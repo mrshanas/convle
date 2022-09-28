@@ -1,6 +1,10 @@
 <h1 align="center" style="font-weight:bold">ConVLE</h1>
 
-Demo 👉 [convle.vercel.app](https://convle.vercel.app)
+<!-- Demo 👉 [convle.vercel.app](https://convle.vercel.app) -->
+
+Preview
+
+![](./src/assets/screenshot-convle.png)
 
 Made with
 
@@ -9,7 +13,7 @@ Made with
 - [TailwindCSS](https://tailwindcss.com)
 - [Django Rest Framework (Backend)](https://www.django-rest-framework.org)
 
-Featuresz
+Features
 
 - Realtime chatting using Websockets
 - Google OAuth2 Sign In
