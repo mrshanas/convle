@@ -1,5 +1,5 @@
 <template>
-  <main class="text-white">
+  <main class="text-white font-poppins">
     <router-view />
   </main>
 </template>

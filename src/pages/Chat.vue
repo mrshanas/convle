@@ -18,13 +18,38 @@
         class="flex justify-between h-[3.2rem] px-2 items-center w-full py-3 mx-auto my-2 sticky z-50 shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
       >
         <h3 class="font-semibold">Groups</h3>
-        <div class="">
-          <div
-            class="w-full px-2 flex text-center rounded-md bg-gray-dark cursor-pointer"
+        <div class="w-[10%]">
+          <button
+            @click="showModal = !showModal"
+            class="w-full inline-flex justify-center items-center text-xl rounded-md bg-gray-dark cursor-pointer"
           >
-            <small class="text-2xl">&plus;</small>
-          </div>
+            &plus;
+          </button>
         </div>
+
+        <!-- A modal for adding a Group  -->
+        <Modal
+          title="New Group"
+          :isOpen="showModal"
+          :buttonText="buttonText"
+          @onClose="onClose"
+        >
+          <form autocomplete="off" class="w-full flex flex-col gap-y-3">
+            <input
+              type="text"
+              placeholder="Group name"
+              v-model="groupName"
+              class="outline-none bg-gray-dark p-2 text-white rounded-md focus:outline-none focus:text-white"
+            />
+            <textarea
+              v-model="groupDesc"
+              class="outline-none bg-gray-dark p-2 text-white placeholder:text-white rounded-md focus:outline-none focus:text-white"
+              cols="30"
+              rows="3"
+              placeholder="Group description"
+            ></textarea>
+          </form>
+        </Modal>
       </div>
 
       <!-- Search Bar  -->
@@ -88,10 +113,40 @@
           class="w-[7%] ml-2 lg:hidden cursor-pointer"
           @click.prevent="isNavOpen = !isNavOpen"
         />
-        <h2 class="font-semibold text-xl ml-8" v-if="selectedGroup !== {}">
+
+        <h2
+          class="font-semibold text-xl ml-8 cursor-pointer"
+          @click="showGrpDesc"
+          v-if="selectedGroup !== {}"
+        >
           {{ selectedGroup.name }}
         </h2>
-        <h2 class="font-semibold text-xl ml-8" v-else>ConVLE</h2>
+        <h2 class="font-semibold text-xl ml-8 cursor-pointer" v-else>ConVLE</h2>
+
+        <!-- Modal for displaying group description  -->
+        <Modal
+          buttonText="Close"
+          title="Group"
+          :isOpen="showGroup"
+          @onClose="showGrpDesc"
+        >
+          <div>
+            <h3 class="text-white text-2xl my-3">{{ selectedGroup.name }}</h3>
+            <p class="text-white my-3">{{ selectedGroup.description }}</p>
+
+            <h5 class="text-white uppercase">Members</h5>
+            <div>
+              <h6
+                class="text-white"
+                v-for="member in selectedGroup.members"
+                :key="member.id"
+              >
+                {{ member.username }}
+                <small v-if="member.id === user.id">admin</small>
+              </h6>
+            </div>
+          </div>
+        </Modal>
       </div>
 
       <article
@@ -155,6 +210,7 @@ import {
 import jwtDecode from "jwt-decode";
 
 import Message from "../components/Message.vue";
+import Modal from "../components/Modal.vue";
 import shanas from "../assets/shanas.jpg";
 
 export default {
@@ -163,17 +219,23 @@ export default {
     ChevronDownIcon,
     MagnifyingGlassIcon,
     Message,
+    Modal,
     PaperAirplaneIcon,
     XMarkIcon,
   },
   data: () => ({
-    shanas,
-    isNavOpen: false,
+    buttonText: "Save",
     groups: [],
+    groupDesc: "",
+    groupName: "",
+    isNavOpen: false,
     message: "",
     messages: [],
-    user: {},
     selectedGroup: {},
+    shanas,
+    showModal: false,
+    showGroup: false,
+    user: {},
     ws: null,
   }),
 
@@ -188,6 +250,9 @@ export default {
     this.scrollToBottom();
   },
   methods: {
+    showGrpDesc() {
+      this.showGroup = !this.showGroup;
+    },
     sendMessage: function (e) {
       e.preventDefault();
       if (!this.message) return;
@@ -217,19 +282,50 @@ export default {
     },
 
     // ------ asynchronous api calls to the server ------
+    async onClose() {
+      if (!this.groupName) {
+        this.showModal = false;
+        return;
+      }
+
+      console.log(this.user.id);
+
+      await this.axios
+        .post("/chat/groups/", {
+          name: this.groupName,
+          description: this.groupDesc,
+          members: [this.user.id],
+        })
+        .then((res) => {
+          this.buttonText = "Uploading...";
+
+          if (res.status === 201) {
+            this.groups.push(res.data);
+            this.buttonText = "Save";
+            this.showModal = false;
+          } else {
+            this.buttonText = "Failed, Try Again";
+          }
+
+          this.groupName = "";
+          this.groupDesc = "";
+        });
+    },
     async fetchUser() {
       const token = JSON.parse(localStorage.getItem("convle_access_token"));
       const userId = jwtDecode(token).user_id;
 
       await this.axios.get(`/users/${userId}/`).then((res) => {
         if (res.status === 200) {
-          this.user.username = res.data.username;
+          this.user = res.data;
         }
       });
     },
     async fetchGroup(groupId: string) {
       await this.axios.get(`/chat/groups/${groupId}`).then((res) => {
         if (res.status === 200) {
+          console.log(res.data);
+
           this.selectedGroup = res.data;
           this.messages = this.selectedGroup.messages;
         }

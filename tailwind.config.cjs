@@ -13,6 +13,9 @@ module.exports = {
           dark: "#333",
         },
       },
+      fontFamily: {
+        poppins: ["Poppins"],
+      },
       screens: {
         xs: "320px",
         sm: "425px",

@@ -2,7 +2,7 @@
   <div class="bg-gray-dark min-h-[100vh]">
     <h1>ConVLE</h1>
 
-    <button @click="login">Login with Google</button>
+    <button @click="login">Continue with Google</button>
   </div>
 </template>
 
