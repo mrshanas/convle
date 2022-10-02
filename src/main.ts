@@ -6,7 +6,7 @@ import "./style.css";
 import App from "./App.vue";
 import router from "./routes";
 
-const baseURL: string = "http://localhost:8000/api";
+const baseURL: string = "http://api.convle.mrshanas.com/api";
 
 const api = axios.create({ baseURL });
 

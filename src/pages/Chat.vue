@@ -334,7 +334,7 @@ export default {
       const token = JSON.parse(localStorage.getItem("convle_access_token"));
 
       this.ws = new WebSocket(
-        `ws://localhost:8000/ws/chat/${groupId}/?token=${token}`
+        `ws://api.convle.mrshanas.com/ws/chat/${groupId}/?token=${token}`
       );
     },
     async fetchData() {
