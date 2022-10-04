@@ -1,8 +1,17 @@
 <template>
-  <div class="bg-gray-dark min-h-[100vh]">
-    <h1>ConVLE</h1>
+  <div
+    class="bg-gray-dark flex flex-col gap-y-10 justify-around items-center min-h-[100vh]"
+  >
+    <h2 class="text-3xl">
+      Welcome to Con<span class="text-orange-500">VLE</span>
+    </h2>
 
-    <button @click="login">Continue with Google</button>
+    <button
+      @click="login"
+      class="bg-blue-500 p-3 rounded-md text-2xl font-poppins text-gray-100"
+    >
+      Continue with Google
+    </button>
   </div>
 </template>
 
