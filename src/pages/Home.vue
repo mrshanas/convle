@@ -8,7 +8,7 @@
 
     <button
       @click="login"
-      class="bg-blue-500 p-3 rounded-md text-2xl font-poppins text-gray-100"
+      class="bg-blue-500 p-3 rounded-md text-2xl font-poppins text-gray-100 outline-none border-none"
     >
       Continue with Google
     </button>
